@@ -19,7 +19,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_KEY }}
         script: |
-          cd ~/credit-fraud-ingestion-api || git clone https://github.com/anupari14/CREDIT-FRAUD-INGESTION-API.git && cd credit-fraud-ingestion-api
+          cd ~/CREDIT-FRAUD-INGESTION-API || git clone https://github.com/anupari14/CREDIT-FRAUD-INGESTION-API.git && cd CREDIT-FRAUD-INGESTION-API
           git pull origin main
           docker build -t credit-fraud-ingestion-api .
           docker stop api || true
