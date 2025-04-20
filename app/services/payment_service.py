@@ -1,24 +1,31 @@
-# Dummy in-memory store (replace with DB later)
-payments = {}
+from app.models.payment_msg import db, PaymentMessage
 
 def get_all_payments():
-    return list(payments.values())
+    return [p.__dict__ for p in PaymentMessage.query.all()]
 
 def get_payment_by_id(message_id):
-    return payments.get(message_id, {"error": "Not found"})
+    payment = PaymentMessage.query.get(message_id)
+    return payment.__dict__ if payment else {"error": "Not found"}
 
 def create_payment(data):
-    message_id = data.get("message_id")
-    if not message_id:
-        return {"error": "message_id is required"}
-    payments[message_id] = data
-    return data
+    payment = PaymentMessage(**data)
+    db.session.add(payment)
+    db.session.commit()
+    return payment.__dict__
 
 def update_payment(message_id, data):
-    if message_id not in payments:
+    payment = PaymentMessage.query.get(message_id)
+    if not payment:
         return {"error": "Not found"}
-    payments[message_id].update(data)
-    return payments[message_id]
+    for key, value in data.items():
+        setattr(payment, key, value)
+    db.session.commit()
+    return payment.__dict__
 
 def delete_payment(message_id):
-    return payments.pop(message_id, {"error": "Not found"})
+    payment = PaymentMessage.query.get(message_id)
+    if not payment:
+        return {"error": "Not found"}
+    db.session.delete(payment)
+    db.session.commit()
+    return {"message": "Deleted"}
