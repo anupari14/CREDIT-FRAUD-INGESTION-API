@@ -5,7 +5,8 @@ db = SQLAlchemy()
 
 class PaymentMessage(db.Model):
     __tablename__ = "payment_msgs_raw"
-    __table_args__ = {"schema": os.getenv("DB_SCHEMA", "public")}
+    __table_args__ = {"schema": os.getenv("DB_SCHEMA", "as-is-data-schema")}
+
     message_id = db.Column(db.String, primary_key=True)
     card_number_token = db.Column(db.String)
     merchant_id = db.Column(db.String)
@@ -22,3 +23,7 @@ class PaymentMessage(db.Model):
     status = db.Column(db.String)
     risk_score = db.Column(db.Float)
     ip_address = db.Column(db.String)
+
+    def to_dict(self):
+        return {col.name: getattr(self, col.name) for col in self.__table__.columns}
+
