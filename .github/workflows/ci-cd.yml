@@ -21,7 +21,7 @@ jobs:
         script: |
           cd ~/CREDIT-FRAUD-INGESTION-API || git clone https://github.com/anupari14/CREDIT-FRAUD-INGESTION-API.git && cd CREDIT-FRAUD-INGESTION-API
           git pull origin main
-          docker build -t CREDIT-FRAUD-INGESTION-API .
+          docker build -t credit-fraud-ingestion-api .
           docker stop api || true
           docker rm api || true
           docker run -d --name api -p 8000:8000 --env-file .env CREDIT-FRAUD-INGESTION-API
