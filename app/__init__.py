@@ -1,5 +1,6 @@
 from flask import Flask
-from app.api.routes_auth import auth_blueprint,payment_blueprint
+from app.api.routes_auth import auth_blueprint
+from app.api.routes_payment import payment_blueprint
 
 def create_app():
     app = Flask(__name__)
