@@ -8,7 +8,7 @@ import os
 import requests
 import time
 
-def write_dataframe_to_db_via_api(df, api_url, batch_size=100):
+def write_dataframe_to_db_via_api(df, api_url, batch_size=10000):
     """
     Writes the rows of a DataFrame to the payment_msg table using the batch add_payment API.
 
@@ -26,7 +26,7 @@ def write_dataframe_to_db_via_api(df, api_url, batch_size=100):
         else:
             print(f"Successfully inserted batch starting at index {i}")
 
-def generate_base_entities(num_customers=100, num_merchants=1000, multiple_device_ratio=0.1, scenario_ratio=0.01, twofa_ratio=0.3):
+def generate_base_entities(num_customers=100000, num_merchants=1000, multiple_device_ratio=0.1, scenario_ratio=0.01, twofa_ratio=0.3):
     """Generate base entities: customer profiles with cards & devices, and merchant list with MCCs."""
     faker = Faker()
     Faker.seed(0)  # Ensure reproducible fake data
