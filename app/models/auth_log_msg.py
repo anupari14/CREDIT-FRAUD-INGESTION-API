@@ -1,7 +1,6 @@
 import os
-from flask_sqlalchemy import SQLAlchemy
+from app.models import db  # <- get shared db instance
 
-db = SQLAlchemy()
 
 class AuthLogMessage(db.Model):
     __tablename__ = "auth_log_msgs_raw"

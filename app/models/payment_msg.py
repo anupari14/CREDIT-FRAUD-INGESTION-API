@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 import os
-
-db = SQLAlchemy()
+from app.models import db 
 
 class PaymentMessage(db.Model):
     __tablename__ = "payment_msgs_raw"

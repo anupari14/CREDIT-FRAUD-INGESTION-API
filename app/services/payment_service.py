@@ -1,4 +1,5 @@
-from app.models.payment_msg import db, PaymentMessage
+from app.models import db
+from app.models.payment_msg import PaymentMessage
 
 def get_all_payments():
     payments = PaymentMessage.query.all()

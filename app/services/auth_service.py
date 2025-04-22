@@ -1,3 +1,4 @@
+from app.models import db
 from app.models.auth_log_msg import db, AuthLogMessage
 
 def get_all_auth_logs():
