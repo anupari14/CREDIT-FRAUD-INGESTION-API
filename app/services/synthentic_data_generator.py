@@ -661,6 +661,13 @@ if __name__ == "__main__":
     # df_auth.to_csv('auth_log_msgs_raw.csv', index=False)
     write_dataframe_to_db_via_api(df_auth, 'http://ec2-3-25-114-250.ap-southeast-2.compute.amazonaws.com:8000/api/authlog/batch', batch_size=1000)
     # df_dispute.to_csv('dispute_msgs_raw.csv', index=False)
+    df_dispute['timestamp'] = df_dispute['timestamp'].astype(str)
+    df_dispute['resolution_timestamp'] = df_dispute['resolution_timestamp'].astype(str)
+    df_dispute['evidence_provided'] = df_dispute['evidence_provided'].apply(lambda x: str(x).lower() == 'yes')
+    # Replace empty strings and NaT with None (null) for resolution_timestamp
+    df_dispute['resolution_timestamp'] = df_dispute['resolution_timestamp'].replace(["", pd.NaT], None)
+    # Replace empty strings and NaT with None (null) for resolution_timestamp
+    df_dispute['timestamp'] = df_dispute['timestamp'].replace(["", pd.NaT], None)
     write_dataframe_to_db_via_api(df_dispute, 'http://ec2-3-25-114-250.ap-southeast-2.compute.amazonaws.com:8000/api/dispute/batch', batch_size=1000)
     df_kyc.to_csv('kyc_msgs_raw.csv', index=False)
 
