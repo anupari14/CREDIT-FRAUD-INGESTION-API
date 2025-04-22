@@ -8,7 +8,7 @@ import os
 import requests
 import time
 
-def write_dataframe_to_db_via_api(df, api_url, batch_size=10000):
+def write_dataframe_to_db_via_api(df, api_url, batch_size=1000):
     """
     Writes the rows of a DataFrame to the payment_msg table using the batch add_payment API.
 
@@ -17,6 +17,11 @@ def write_dataframe_to_db_via_api(df, api_url, batch_size=10000):
         api_url (str): The base URL of the batch add_payment API endpoint.
         batch_size (int): Number of records to send in each batch.
     """
+    # Convert all Timestamp columns to ISO 8601 strings
+    df = df.copy()
+    for col in df.select_dtypes(include=['datetime64[ns]', 'datetime64[ns, UTC]']).columns:
+        df[col] = df[col].dt.strftime('%Y-%m-%dT%H:%M:%S.%fZ')  # ISO 8601 format
+
     for i in range(0, len(df), batch_size):
         batch = df.iloc[i:i+batch_size].to_dict(orient='records')  # Convert batch to list of dictionaries
         response = requests.post(api_url, json=batch)
@@ -26,7 +31,7 @@ def write_dataframe_to_db_via_api(df, api_url, batch_size=10000):
         else:
             print(f"Successfully inserted batch starting at index {i}")
 
-def generate_base_entities(num_customers=100000, num_merchants=1000, multiple_device_ratio=0.1, scenario_ratio=0.01, twofa_ratio=0.3):
+def generate_base_entities(num_customers=1000, num_merchants=1000, multiple_device_ratio=0.1, scenario_ratio=0.01, twofa_ratio=0.3):
     """Generate base entities: customer profiles with cards & devices, and merchant list with MCCs."""
     faker = Faker()
     Faker.seed(0)  # Ensure reproducible fake data
@@ -652,9 +657,11 @@ if __name__ == "__main__":
     df_payment.drop(columns=['timestamp'], inplace=True)
     # Save each table to CSV
     # df_payment.to_csv('payment_msgs_raw.csv', index=False)
-    write_dataframe_to_db_via_api(df_payment, 'http://ec2-3-25-114-250.ap-southeast-2.compute.amazonaws.com:8000/api/payment/batch', batch_size=100)
-    df_auth.to_csv('auth_log_msgs_raw.csv', index=False)
-    df_dispute.to_csv('dispute_msgs_raw.csv', index=False)
+    write_dataframe_to_db_via_api(df_payment, 'http://ec2-3-25-114-250.ap-southeast-2.compute.amazonaws.com:8000/api/payment/batch', batch_size=1000)
+    # df_auth.to_csv('auth_log_msgs_raw.csv', index=False)
+    write_dataframe_to_db_via_api(df_auth, 'http://ec2-3-25-114-250.ap-southeast-2.compute.amazonaws.com:8000/api/authlog/batch', batch_size=1000)
+    # df_dispute.to_csv('dispute_msgs_raw.csv', index=False)
+    write_dataframe_to_db_via_api(df_dispute, 'http://ec2-3-25-114-250.ap-southeast-2.compute.amazonaws.com:8000/api/dispute/batch', batch_size=1000)
     df_kyc.to_csv('kyc_msgs_raw.csv', index=False)
 
     print("Synthetic data generation completed. CSV files saved.")
